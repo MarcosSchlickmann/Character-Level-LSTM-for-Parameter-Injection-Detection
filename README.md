@@ -9,4 +9,4 @@ check out the following repository for HTTP CSIC 2010 preprocessing:
 https://github.com/Monkey-D-Groot/Machine-Learning-on-CSIC-2010/blob/master/main.py
 
 # Result: 
-The model was trained on partial training data and evaluated on the evaluation set over 100 epochs. After analyzing the results, it was determined that the validation accuracy stops improving after 40 epochs and the loss increases. Therefore, the number of epochs was set to 40. The model was rebuilt and trained over the entire data set and evaluated using the testing data which resulted in accuracy of %98. 
+The model was trained on partial training data and evaluated on the evaluation set over 100 epochs. After analyzing the results, it was determined that the validation accuracy stops improving after 40 epochs and the loss increases. Therefore, the number of epochs was set to 40. The model was rebuilt and trained over the entire data set and evaluated using the testing data which resulted in accuracy of 98%. 
