@@ -35,8 +35,11 @@ x = x_normal  + x_anomalous
 tokenizer = Tokenizer(char_level=True) #treating each character as a token
 tokenizer.fit_on_texts(x) #training the tokenizer on the text
 
+to_predict = [ x_normal[random.randint(0, 20000)], x_anomalous[random.randint(0, 20000)] ]
+print(to_predict)
+
 #creating the numerical sequences by mapping the indices to the characters
-sequences = tokenizer.texts_to_sequences([ x_normal[random.randint(0, 20000)], x_anomalous[random.randint(0, 20000)] ])
+sequences = tokenizer.texts_to_sequences(to_predict)
 char_index = tokenizer.word_index
 print(char_index)
 maxlen = 1000   #length of the longest sequence=input_length
