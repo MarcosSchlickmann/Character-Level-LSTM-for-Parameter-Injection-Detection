@@ -8,6 +8,9 @@ import numpy as np
 import io
 from sklearn.model_selection import train_test_split
 
+import random
+
+
 #loading the parsed files
 def load_data(file):
     with io.open(file, 'r', encoding="utf8") as f:
@@ -23,7 +26,7 @@ def load_data(file):
 x_normal = load_data("normal_parsed.txt")
 x_anomalous = load_data("anomalous_parsed.txt")
 
-registro_para_prever = load_data("registro_para_prever.txt")
+# registro_para_prever = load_data("registro_para_prever.txt")
 
 #Creating the dataset
 x = x_normal  + x_anomalous
@@ -33,7 +36,7 @@ tokenizer = Tokenizer(char_level=True) #treating each character as a token
 tokenizer.fit_on_texts(x) #training the tokenizer on the text
 
 #creating the numerical sequences by mapping the indices to the characters
-sequences = tokenizer.texts_to_sequences(registro_para_prever)
+sequences = tokenizer.texts_to_sequences([ x_normal[random.randint(0, 20000)], x_anomalous[random.randint(0, 20000)] ])
 char_index = tokenizer.word_index
 print(char_index)
 maxlen = 1000   #length of the longest sequence=input_length
@@ -43,5 +46,7 @@ model = models.load_model('securitai-lstm-model.h5')
 model.load_weights('securitai-lstm-weights.h5')
 model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
 
-prediction = model.predict(xx)
+prediction = model(xx)
+print(len(xx))
+print(xx)
 print(prediction)

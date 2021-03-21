@@ -87,12 +87,7 @@ def build_model():
 model = build_model()
 print(model.summary())
 
-'''
-#evaluating the model over 100 epochs 
-model.fit(partial_x_train, partial_y_train, epochs=100, batch_size=32)
-val_acc = model.evaluate(x_val, y_val)
-print(val_acc) 
-'''
+
 #training the model on the entire training set and evaluating it using the testing data
 model.fit(x_train, y_train, epochs=3, batch_size=32)
 test_acc, test_loss = model.evaluate(x_test, y_test)
