@@ -35,7 +35,6 @@ def get_body_of_request(lines: list, start_line: int):
 
 
 def parse(request: list = None, file_in: str = None, file_out: str = None):
-    
     if request:
         lines = request
     elif file_in:
@@ -53,17 +52,17 @@ def parse(request: list = None, file_in: str = None, file_out: str = None):
     else:
         fout = io.open(file_out, "w", encoding="utf-8")
         for line in res:
-            line = urllib.parse.unquote(line).replace('\n','').lower()
+            line = urllib.parse.unquote(line).replace('\n','')
             fout.writelines(line + '\n')
         fout.close()
 
 
 if __name__ == '__main__':
-    normal_file = '../normalTraffic.txt'
-    anomalous_file = '../anomalousTraffic.txt'
+    normal_file = '../data/normalTraffic.txt'
+    anomalous_file = '../data/anomalousTraffic.txt'
 
-    normal_parsed = '../normal_parsed.txt'
-    anomalous_parsed = '../anomalous_parsed.txt'
+    normal_parsed = '../data/normal_parsed.txt'
+    anomalous_parsed = '../data/anomalous_parsed.txt'
 
-    parse_file(normal_file,normal_parsed)
-    parse_file(anomalous_file, anomalous_parsed)
+    parse(file_in=normal_file, file_out=normal_parsed)
+    parse(file_in=anomalous_file, file_out=anomalous_parsed)
