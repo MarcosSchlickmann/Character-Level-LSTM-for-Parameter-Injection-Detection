@@ -2,13 +2,14 @@
 # _*_ coding: utf-8 _*_
 
 from keras import preprocessing
-from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.text import Tokenizer, tokenizer_from_json
 from keras.preprocessing.sequence import pad_sequences
 from keras import models
 from keras.layers import Embedding, Dense, Dropout, LSTM
 import numpy as np
 import io
 from sklearn.model_selection import train_test_split
+import json
 
 #loading the parsed files
 def load_data(file):
@@ -34,16 +35,17 @@ y_anomalous = [1] * len(x_anomalous)
 y = y_normal + y_anomalous
 
 #assigning indices to each character in the query string
-tokenizer = Tokenizer(char_level=True) #treating each character as a token
-tokenizer.fit_on_texts(x) #training the tokenizer on the text
+# tokenizer = Tokenizer(char_level=True) #treating each character as a token
+# tokenizer.fit_on_texts(x) #training the tokenizer on the text
+with open('data/tokenized-chars.json') as json_file:
+    tokenizer_conf = json.load(json_file)
 
+tokenizer = tokenizer_from_json(tokenizer_conf)
 
 #spliting the dataset into train and test 80/20
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=21)
 
 char_index = tokenizer.word_index
-#to see the list of characters with their indices:
-print(char_index)
 
 #creating the numerical sequences by mapping the indices to the characters
 train_sequences = tokenizer.texts_to_sequences(x_train)
@@ -62,7 +64,7 @@ x_train = train_data
 x_test = test_data
 
 #size of the vector space in which characters will be embedded
-embedding_dim = 32
+embedding_dim = 100
 
 #size of the vocabulary or input_dim
 max_chars = 63
