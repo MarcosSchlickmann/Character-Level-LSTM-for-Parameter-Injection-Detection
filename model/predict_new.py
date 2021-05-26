@@ -1,3 +1,4 @@
+import sys
 from keras import preprocessing
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
@@ -27,17 +28,25 @@ def load_data(file):
 
 x_normal = load_data("data/normal_parsed.txt")
 x_anomalous = load_data("data/anomalous_parsed.txt")
-
 x_normal_len = len(x_normal)
 x_anomalous_len = len(x_anomalous)
+x = x_normal  + x_anomalous
+
+no_yy = [0 for i in range(x_normal_len)]
+an_yy = [1 for i in range(x_anomalous_len)]
+y = no_yy + an_yy
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=21)
+print('len x_train: {}, len y_train: {}'.format(len(x_test), len(y_test)))
+# x_normal = x_normal[20000:]
+# x_anomalous = x_anomalous[20000:]
 
 # registro_para_prever = load_data("registro_para_prever.txt")
 
 #Creating the dataset
-x = x_normal  + x_anomalous
 #assigning indices to each character in the query string
 tokenizer = Tokenizer(char_level=True) #treating each character as a token
-tokenizer.fit_on_texts(x) #training the tokenizer on the text
+tokenizer.fit_on_texts(x_test) #training the tokenizer on the text
 char_index = tokenizer.word_index
 
 
@@ -45,7 +54,7 @@ char_index = tokenizer.word_index
 # print(char_index)
 
 # x = x_normal[:50] + x_anomalous[:50]
-to_predict = x
+to_predict = x_test
 # to_predict = [ x_normal[random.randint(0, 20000)], x_anomalous[random.randint(0, 20000)] ]
 # to_predict = ["gethttp://localhost:8080/tienda1/publico/anadir.jsp?id=2&nombre=jam�n+ib�rico&precio=85", "gethttp://localhost:8080/teste.jsp?id=20&nombre='+drop+table"]
 
@@ -64,16 +73,14 @@ predictions = model.predict(xx, verbose=1)
 # print(predictions)
 
 normalized_predictions = []
+default_predictions = []
 for prediction in predictions:
+    default_predictions.append(round(prediction[0], 4))
     if prediction[0] > 0.80:
         normalized_predictions.append(1)
         continue
     normalized_predictions.append(0)
 # print(normalized_predictions)
-
-no_yy = [0 for i in range(x_normal_len)]
-an_yy = [1 for i in range(x_anomalous_len)]
-yy = no_yy + an_yy
 
 # for i in range(100):
 #     print(normalized_predictions[i], yy[i])
@@ -83,12 +90,16 @@ yy = no_yy + an_yy
 
 
 # y_pred_bool = np.argmax(normalized_predictions, axis=1)
-report = classification_report(yy, normalized_predictions)
+report = classification_report(y_test, normalized_predictions)
 print(report)
-# file = open('data/predictions.csv', 'w')
-# with file:    
-#     write = csv.writer(file, delimiter='\t')
-#     write.writerows(zip(x, prediction))
+
+def format_row(a,b,c):
+    return ('{:.4f}'.format(a), b, c)
+
+file = open('data/predictions.csv', 'w')
+with file:    
+    write = csv.writer(file, delimiter=',')
+    write.writerows([format_row(a,b,c) for (a,b,c) in zip(default_predictions, normalized_predictions, y_train)])
 
 # print(len(xx))
 # print(xx)
