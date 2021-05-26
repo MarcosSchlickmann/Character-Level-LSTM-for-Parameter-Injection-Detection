@@ -1,6 +1,6 @@
 import sys
 from keras import preprocessing
-from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.text import Tokenizer, tokenizer_from_json
 from keras.preprocessing.sequence import pad_sequences
 from keras import models
 from keras import layers
@@ -9,7 +9,9 @@ import numpy as np
 import io
 import csv
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
+
+import json
 
 import random
 
@@ -39,30 +41,16 @@ y = no_yy + an_yy
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=21)
 print('len x_train: {}, len y_train: {}'.format(len(x_test), len(y_test)))
 
-# x_normal = x_normal[20000:]
-# x_anomalous = x_anomalous[20000:]
-
-# registro_para_prever = load_data("registro_para_prever.txt")
-
-#Creating the dataset
-#assigning indices to each character in the query string
-tokenizer = Tokenizer(char_level=True) #treating each character as a token
-tokenizer.fit_on_texts(x_test) #training the tokenizer on the text
+with open('data/tokenized-chars.json') as json_file:
+    tokenizer_conf = json.load(json_file)
+tokenizer = tokenizer_from_json(tokenizer_conf)
 char_index = tokenizer.word_index
 
-
-#to see the list of characters with their indices:
-# print(char_index)
-
-# x = x_normal[:50] + x_anomalous[:50]
 to_predict = x_test
-# to_predict = [ x_normal[random.randint(0, 20000)], x_anomalous[random.randint(0, 20000)] ]
-# to_predict = ["gethttp://localhost:8080/tienda1/publico/anadir.jsp?id=2&nombre=jam�n+ib�rico&precio=85", "gethttp://localhost:8080/teste.jsp?id=20&nombre='+drop+table"]
 
 #creating the numerical sequences by mapping the indices to the characters
 sequences = tokenizer.texts_to_sequences(to_predict)
 char_index = tokenizer.word_index
-# print(char_index)
 maxlen = 1000   #length of the longest sequence=input_length
 xx = pad_sequences(sequences, maxlen=maxlen)
 
@@ -71,7 +59,6 @@ model.load_weights('model/lstm-weights.h5')
 model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
 
 predictions = model.predict(xx, verbose=1)
-# print(predictions)
 
 normalized_predictions = []
 default_predictions = []
@@ -81,28 +68,17 @@ for prediction in predictions:
         normalized_predictions.append(1)
         continue
     normalized_predictions.append(0)
-# print(normalized_predictions)
-
-# for i in range(100):
-#     print(normalized_predictions[i], yy[i])
-
-# for i in zip(prediction, yy):
-# 	print(i)
 
 
-# y_pred_bool = np.argmax(normalized_predictions, axis=1)
 report = classification_report(y_test, normalized_predictions)
 print(report)
+tn, fp, fn, tp = confusion_matrix(y_test, normalized_predictions).ravel()
+print("TN: {}, FP: {}, FN: {}, TP: {}".format(tn, fp, fn, tp))
 
 def format_row(a,b,c):
     return ('{:.4f}'.format(a), b, c)
 
-file = open('data/predictions.csv', 'w')
+file = open('data/predictions2.csv', 'w')
 with file:    
     write = csv.writer(file, delimiter=',')
     write.writerows([format_row(a,b,c) for (a,b,c) in zip(default_predictions, normalized_predictions, y_test)])
-
-# print(len(xx))
-# print(xx)
-# print(prediction)
-# print("{:.4f}, {:.4f}".format(prediction[0][0], prediction[1][0]))
