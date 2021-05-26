@@ -94,5 +94,5 @@ model.fit(x_train, y_train, epochs=3, batch_size=32)
 test_acc, test_loss = model.evaluate(x_test, y_test)
 print(test_acc, test_loss)
 
-model.save_weights('lstm-weights.h5')
-model.save('lstm-model.h5')
+model.save_weights('model/lstm-weights.h5')
+model.save('model/lstm-model.h5')
