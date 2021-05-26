@@ -1,0 +1,5 @@
+venv/
+anomalous_parsed.txt
+anomalousTraffic.txt
+normal_parsed.txt
+normalTraffic.txt

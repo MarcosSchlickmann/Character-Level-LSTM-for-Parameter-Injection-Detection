@@ -5,7 +5,6 @@ from keras import preprocessing
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras import models
-from keras import layers
 from keras.layers import Embedding, Dense, Dropout, LSTM
 import numpy as np
 import io
@@ -78,10 +77,10 @@ max_chars = 63
 
 def build_model():
   model = models.Sequential()
-  model.add(layers.Embedding(max_chars, embedding_dim, input_length=maxlen))
-  model.add(layers.LSTM(100))
-  model.add(layers.Dropout(0.5))
-  model.add(layers.Dense(1, activation='sigmoid'))
+  model.add(Embedding(max_chars, embedding_dim, input_length=maxlen))
+  model.add(LSTM(100))
+  model.add(Dropout(0.5))
+  model.add(Dense(1, activation='sigmoid'))
   model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
   return model
 
@@ -95,7 +94,9 @@ val_acc = model.evaluate(x_val, y_val)
 print(val_acc) 
 '''
 #training the model on the entire training set and evaluating it using the testing data
-model.fit(x_train, y_train, epochs=40, batch_size=32)
+model.fit(x_train, y_train, epochs=3, batch_size=32)
 test_acc, test_loss = model.evaluate(x_test, y_test)
 print(test_acc, test_loss)
 
+model.save_weights('securitai-lstm-weights.h5')
+model.save('securitai-lstm-model.h5')
