@@ -23,8 +23,8 @@ def load_data(file):
     return result
 
 
-x_normal = load_data("normal_parsed.txt")
-x_anomalous = load_data("anomalous_parsed.txt")
+x_normal = load_data("data/normal_parsed.txt")
+x_anomalous = load_data("data/anomalous_parsed.txt")
 
 # registro_para_prever = load_data("registro_para_prever.txt")
 
@@ -45,11 +45,12 @@ print(char_index)
 maxlen = 1000   #length of the longest sequence=input_length
 xx = pad_sequences(sequences, maxlen=maxlen)
 
-model = models.load_model('securitai-lstm-model.h5')
-model.load_weights('securitai-lstm-weights.h5')
+model = models.load_model('model/lstm-model.h5')
+model.load_weights('model/lstm-weights.h5')
 model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
 
 prediction = model(xx)
 print(len(xx))
 print(xx)
 print(prediction)
+print("{:.4f}, {:.4f}".format(prediction[0][0], prediction[1][0]))
