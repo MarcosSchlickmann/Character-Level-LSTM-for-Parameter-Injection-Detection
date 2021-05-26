@@ -38,6 +38,7 @@ y = no_yy + an_yy
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=21)
 print('len x_train: {}, len y_train: {}'.format(len(x_test), len(y_test)))
+
 # x_normal = x_normal[20000:]
 # x_anomalous = x_anomalous[20000:]
 
@@ -99,7 +100,7 @@ def format_row(a,b,c):
 file = open('data/predictions.csv', 'w')
 with file:    
     write = csv.writer(file, delimiter=',')
-    write.writerows([format_row(a,b,c) for (a,b,c) in zip(default_predictions, normalized_predictions, y_train)])
+    write.writerows([format_row(a,b,c) for (a,b,c) in zip(default_predictions, normalized_predictions, y_test)])
 
 # print(len(xx))
 # print(xx)

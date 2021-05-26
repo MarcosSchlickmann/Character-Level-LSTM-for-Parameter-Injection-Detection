@@ -37,37 +37,29 @@ y = y_normal + y_anomalous
 tokenizer = Tokenizer(char_level=True) #treating each character as a token
 tokenizer.fit_on_texts(x) #training the tokenizer on the text
 
-#creating the numerical sequences by mapping the indices to the characters
-sequences = tokenizer.texts_to_sequences(x)
-char_index = tokenizer.word_index
-
-
-#to see the list of characters with their indices:
-print(char_index)
-
-maxlen = 1000   #length of the longest sequence=input_length
-
-#padding the sequences to the same length
-x = pad_sequences(sequences, maxlen=maxlen)
-y = np.asarray(y)
-
-#shuffle the dataset since the samples are ordered (normal requests first then anomalous requests)
-indices = np.arange(x.shape[0])
-np.random.shuffle(indices)
-x = x[indices]
-y = y[indices]
 
 #spliting the dataset into train and test 80/20
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=21)
 
-#print(x_train.shape)
-#print(x_test.shape)
+char_index = tokenizer.word_index
+#to see the list of characters with their indices:
+print(char_index)
 
-#creating the validation set
-x_val = x_train[:20000]
-partial_x_train = x_train[20000:]
-y_val = y_train[:20000]
-partial_y_train = y_train[20000:]
+#creating the numerical sequences by mapping the indices to the characters
+train_sequences = tokenizer.texts_to_sequences(x_train)
+test_sequences = tokenizer.texts_to_sequences(x_test)
+
+maxlen = 1000   #length of the longest sequence=input_length
+
+train_data = pad_sequences(train_sequences, maxlen=maxlen)
+test_data = pad_sequences(test_sequences, maxlen=maxlen)
+
+
+y_train = np.asarray(y_train)
+y_test = np.asarray(y_test)
+
+x_train = train_data
+x_test = test_data
 
 #size of the vector space in which characters will be embedded
 embedding_dim = 32
@@ -77,13 +69,13 @@ max_chars = 63
 
 
 def build_model():
-  model = models.Sequential()
-  model.add(Embedding(max_chars, embedding_dim, input_length=maxlen))
-  model.add(LSTM(100))
-  model.add(Dropout(0.5))
-  model.add(Dense(1, activation='sigmoid'))
-  model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
-  return model
+    model = models.Sequential()
+    model.add(Embedding(max_chars, embedding_dim, input_length=maxlen))
+    model.add(LSTM(100))
+    model.add(Dropout(0.5))
+    model.add(Dense(1, activation='sigmoid'))
+    model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
+    return model
 
 model = build_model()
 print(model.summary())
