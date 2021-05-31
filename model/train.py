@@ -73,7 +73,11 @@ max_chars = 63
 def build_model():
     model = models.Sequential()
     model.add(Embedding(max_chars, embedding_dim, input_length=maxlen))
-    model.add(LSTM(100))
+    model.add(LSTM(100, return_sequences=True))
+    model.add(Dropout(0.5))
+    model.add(LSTM(50, return_sequences=True))
+    model.add(Dropout(0.5))
+    model.add(LSTM(25))
     model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(optimizer='adam',  loss='binary_crossentropy', metrics=['accuracy'])
